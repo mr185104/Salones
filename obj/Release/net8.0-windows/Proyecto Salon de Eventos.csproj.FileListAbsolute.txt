@@ -1,0 +1,23 @@
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\bin\Release\net8.0-windows\Proyecto Salon de Eventos.exe
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\bin\Release\net8.0-windows\Proyecto Salon de Eventos.deps.json
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\bin\Release\net8.0-windows\Proyecto Salon de Eventos.runtimeconfig.json
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\bin\Release\net8.0-windows\Proyecto Salon de Eventos.dll
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\bin\Release\net8.0-windows\Proyecto Salon de Eventos.pdb
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto_Salon_de_Eventos.Properties.Resources.resources
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto_Salon_de_Eventos.View.PantallaCliente.resources
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto_Salon_de_Eventos.View.FormConfig.resources
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto_Salon_de_Eventos.View.FormMenu.resources
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto_Salon_de_Eventos.View.FormPresupuesto.resources
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto_Salon_de_Eventos.View.FormSalon.resources
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto_Salon_de_Eventos.Principal.resources
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.csproj.GenerateResource.cache
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.AssemblyInfoInputs.cache
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.AssemblyInfo.cs
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.csproj.CoreCompileInputs.cache
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.dll
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\refint\Proyecto Salon de Eventos.dll
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.pdb
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto Salon de Eventos.genruntimeconfig.cache
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\ref\Proyecto Salon de Eventos.dll
+C:\Users\marti\source\repos\Proyecto Salon de Eventos\obj\Release\net8.0-windows\Proyecto.59CAAAD1.Up2Date

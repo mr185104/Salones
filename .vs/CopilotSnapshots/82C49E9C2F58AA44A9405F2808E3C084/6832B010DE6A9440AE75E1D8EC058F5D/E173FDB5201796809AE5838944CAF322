@@ -1,0 +1,283 @@
+﻿using Proyecto_Salon_de_Eventos.Controller;
+using Proyecto_Salon_de_Eventos.Dto;
+using Proyecto_Salon_de_Eventos.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace Proyecto_Salon_de_Eventos.View
+{
+    public partial class FormPresupuestoGestion : Form
+    {
+        private readonly PresupuestoController _controller;
+        private readonly SalonController _salonController; // 👈 Controlador de salones
+        private Presupuesto _presupuestoActual;
+        private bool _esEdicion;
+
+        // Constructor 1: Para CREAR un presupuesto nuevo
+        public FormPresupuestoGestion()
+        {
+            InitializeComponent();
+            _controller = new PresupuestoController();
+            _salonController = new SalonController(); // 👈 Inicializamos el controlador
+            _presupuestoActual = new Presupuesto();
+            _esEdicion = false;
+        }
+
+        // Constructor 2: Para EDITAR un presupuesto existente (recibe el ID)
+        public FormPresupuestoGestion(int presupuestoId) : this()
+        {
+            _esEdicion = true;
+
+            Presupuesto presupuestoEncontrado = _controller.BuscarModeloPresupuestoPorId(presupuestoId);
+
+            if (presupuestoEncontrado != null)
+            {
+                _presupuestoActual = presupuestoEncontrado;
+            }
+            else
+            {
+                MessageBox.Show("No se encontró el presupuesto seleccionado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        // Constructor 3: Para CREAR un presupuesto asignando un cliente directamente
+        public FormPresupuestoGestion(Cliente clientePreseleccionado) : this()
+        {
+            if (clientePreseleccionado != null)
+            {
+                _presupuestoActual.Cliente = clientePreseleccionado;
+
+                lblPresupuestoClienteNombreyApelllido.Text = clientePreseleccionado.Nombre + " " + clientePreseleccionado.Apellido;
+                txtBoxPresupuestoClienteDNI.Text = clientePreseleccionado.Dni;
+            }
+        }
+
+        private void FormPresupuestoGestion_Load(object sender, EventArgs e)
+        {
+            CargarComboBoxEstado();
+            CargarListBoxHoras();
+            CargarComboBoxSalones(); // 👈 Cargamos el ComboBox con los nombres de los salones
+            CargarDatosEnPantalla();
+        }
+
+        private void CargarComboBoxEstado()
+        {
+            cbboxPresupuestoEstado.DataSource = Enum.GetValues(typeof(Estado));
+            cbboxPresupuestoEstado.DropDownStyle = ComboBoxStyle.DropDownList;
+        }
+
+        private void CargarListBoxHoras()
+        {
+            listBoxPresupuestoCantidadHoras.Items.Clear();
+            listBoxPresupuestoCantidadHoras.Items.Add(4);
+            listBoxPresupuestoCantidadHoras.Items.Add(6);
+            listBoxPresupuestoCantidadHoras.Items.Add(8);
+            listBoxPresupuestoCantidadHoras.Items.Add(10);
+        }
+
+        private void CargarComboBoxSalones()
+        {
+            List<SalonDto> listaSalones = _salonController.ListarSalones().ToList();
+
+            cbboxPresupuestoSalon.DataSource = null;
+            cbboxPresupuestoSalon.DataSource = listaSalones;
+            cbboxPresupuestoSalon.DisplayMember = "Nombre"; // Lo que se muestra en pantalla
+            cbboxPresupuestoSalon.ValueMember = "Id";       // El ID interno
+            cbboxPresupuestoSalon.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbboxPresupuestoSalon.SelectedIndex = -1;       // Sin selección inicial por defecto
+        }
+
+        private void CargarDatosEnPantalla()
+        {
+            // 1. Número o ID
+            lblPresupuestoNumeroAsignado.Text = _presupuestoActual.Id == 0 ? "Nuevo" : _presupuestoActual.Id.ToString("D5");
+
+            // 2. Estado
+            if (cbboxPresupuestoEstado.Items.Contains(_presupuestoActual.Estado))
+            {
+                cbboxPresupuestoEstado.SelectedItem = _presupuestoActual.Estado;
+            }
+
+            // 3. Duración (Horas) en el ListBox
+            if (listBoxPresupuestoCantidadHoras.Items.Contains(_presupuestoActual.Duracion))
+            {
+                listBoxPresupuestoCantidadHoras.SelectedItem = _presupuestoActual.Duracion;
+            }
+
+            // 4. Salón (si ya lo tiene asignado al editar)
+            if (_presupuestoActual.Salon != null)
+            {
+                cbboxPresupuestoSalon.SelectedValue = _presupuestoActual.Salon.Id;
+                txtBoxPresupuestoSalonLocalidad.Text = _presupuestoActual.Salon.Localidad;
+            }
+
+            // 5. Fechas
+            dateTimePickPresupuestoFecha.Value = _presupuestoActual.FechaPresupuesto.ToDateTime(TimeOnly.MinValue);
+            dateTimePickPresupuestoEvento.Value = _presupuestoActual.FechaEvento.ToDateTime(TimeOnly.MinValue);
+
+            // 6. Cliente
+            if (_presupuestoActual.Cliente != null)
+            {
+                lblPresupuestoClienteNombreyApelllido.Text = _presupuestoActual.Cliente.Nombre + " " + _presupuestoActual.Cliente.Apellido;
+                txtBoxPresupuestoClienteDNI.Text = _presupuestoActual.Cliente.Dni;
+            }
+
+            // 7. Totales calculados por el dominio POO
+            ActualizarResumenVisual();
+        }
+
+        private void ActualizarResumenVisual()
+        {
+            lblPresupuestoTotalMonto.Text = "$" + _presupuestoActual.CalcularTotal().ToString("N2");
+            lblPresupuestoTotalInvitados.Text = _presupuestoActual.CalcularTotalInvitados().ToString();
+        }
+
+        private void cbboxPresupuestoEstado_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbboxPresupuestoEstado.SelectedItem is Estado estadoSeleccionado)
+            {
+                _presupuestoActual.Estado = estadoSeleccionado;
+            }
+        }
+
+        // 👉 Evento generado cuando el usuario selecciona un salón directamente desde el ComboBox
+        private void cbboxPresupuestoSalon_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbboxPresupuestoSalon.SelectedItem is SalonDto salonDto)
+            {
+                Salon salonModelo = new Salon(
+                    salonDto.Nombre,
+                    salonDto.Direccion,
+                    salonDto.Localidad,
+                    salonDto.Capacidad,
+                    salonDto.Precio
+                );
+                salonModelo.Id = salonDto.Id;
+
+                _presupuestoActual.Salon = salonModelo;
+                txtBoxPresupuestoSalonLocalidad.Text = salonDto.Localidad;
+
+                ActualizarResumenVisual();
+            }
+        }
+
+        private void btnPresupuestoCancelar_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private void btnPresupuestoGuardar_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                _presupuestoActual.FechaPresupuesto = DateOnly.FromDateTime(dateTimePickPresupuestoFecha.Value);
+                _presupuestoActual.FechaEvento = DateOnly.FromDateTime(dateTimePickPresupuestoEvento.Value);
+
+                if (cbboxPresupuestoEstado.SelectedItem is Estado estado)
+                {
+                    _presupuestoActual.Estado = estado;
+                }
+
+                if (listBoxPresupuestoCantidadHoras.SelectedItem != null)
+                {
+                    _presupuestoActual.Duracion = Convert.ToInt32(listBoxPresupuestoCantidadHoras.SelectedItem);
+                }
+
+                if (cbboxPresupuestoSalon.SelectedItem is SalonDto salonDto)
+                {
+                    Salon salonModelo = new Salon(
+                        salonDto.Nombre,
+                        salonDto.Direccion,
+                        salonDto.Localidad,
+                        salonDto.Capacidad,
+                        salonDto.Precio
+                    );
+                    salonModelo.Id = salonDto.Id;
+                    _presupuestoActual.Salon = salonModelo;
+                }
+
+                string resultado;
+
+                if (!_esEdicion)
+                {
+                    resultado = _controller.CrearPresupuestoCompleto(_presupuestoActual);
+                }
+                else
+                {
+                    resultado = _controller.ActualizarPresupuesto(
+                        _presupuestoActual.Id,
+                        _presupuestoActual.FechaPresupuesto,
+                        _presupuestoActual.FechaEvento,
+                        _presupuestoActual.Cliente,
+                        _presupuestoActual.Estado,
+                        _presupuestoActual.Duracion,
+                        _presupuestoActual.Salon
+                    );
+                }
+
+                MessageBox.Show(resultado, "Gestión de Presupuestos", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar el presupuesto: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnPresupuestoBuscarCliente_Click(object sender, EventArgs e)
+        {
+            using (PantallaCliente pantallaClientes = new PantallaCliente())
+            {
+                pantallaClientes.StartPosition = FormStartPosition.CenterParent;
+
+                if (pantallaClientes.ShowDialog() == DialogResult.OK)
+                {
+                    ClienteDto clienteDto = pantallaClientes.ClienteSeleccionado;
+
+                    if (clienteDto != null)
+                    {
+                        Cliente clienteModelo = new Cliente
+                        {
+                            Id = clienteDto.Id,
+                            Nombre = clienteDto.Nombre,
+                            Apellido = clienteDto.Apellido,
+                            Dni = clienteDto.Dni,
+                            Telefono = clienteDto.Telefono,
+                            Email = clienteDto.Email,
+                            Notas = clienteDto.Notas
+                        };
+
+                        _presupuestoActual.Cliente = clienteModelo;
+
+                        lblPresupuestoClienteNombreyApelllido.Text = clienteModelo.Nombre + " " + clienteModelo.Apellido;
+                        txtBoxPresupuestoClienteDNI.Text = clienteModelo.Dni;
+                    }
+                }
+            }
+        }
+
+        // 👉 Botón de búsqueda: Abre FormSalon y al hacer doble clic, selecciona automáticamente el salón en el ComboBox
+        private void btnPresupuestoBuscarSalon_Click(object sender, EventArgs e)
+        {
+            using (FormSalon formSalon = new FormSalon())
+            {
+                formSalon.StartPosition = FormStartPosition.CenterParent;
+
+                if (formSalon.ShowDialog() == DialogResult.OK)
+                {
+                    SalonDto salonDto = formSalon.SalonSeleccionado;
+
+                    if (salonDto != null)
+                    {
+                        // Asignamos el ID al ComboBox, lo que automáticamente disparará cbboxPresupuestoSalon_SelectedIndexChanged
+                        cbboxPresupuestoSalon.SelectedValue = salonDto.Id;
+                    }
+                }
+            }
+        }
+    }
+}
